@@ -30,59 +30,8 @@ DRK_TO_LGT = \
             "‹",
             " "]
 
-def query_and_fetch():
-
-    choice = raw_input("Enter a valid image URL: ")
-    print
-
-    if choice.lower() == 'q':
-        return False
-
-    try:
-        data = urllib.urlopen(choice)
-        f = BytesIO(data.read())
-        img = Image.open(f)
-        return img
-
-    except:
-        print "something went wrong"
-        return False
-
-def get_pixels(img, width, height):
-    data = list(img.getdata())
-    return [data[i * width:(i + 1) * width] for i in xrange(height)]
-
-def make_ascii_frame(width, height, zoom):
-    asc_width  = int(width/zoom)
-    asc_height = int(height/zoom)
-    return [[0 for i in xrange(asc_width)] for j in xrange(asc_height)]
-
-def grayzoom(pixel):
-    return (pixel[0] * .299) + (pixel[1] * 0.587) + (pixel[2] * 0.114)
-
-def gray_mapper(pixels, ascii, asc_width, asc_height, zoom):
-    for row in xrange(len(pixels)):
-        for col in xrange(len(pixels[row])):
-            if row/zoom < asc_height and col/zoom < asc_width:
-                gray = grayzoom(pixels[row][col])
-                ascii[int(row/zoom)][int(col/zoom)] += gray
-
-# gray == ascii[row][col] * (len(DRK_TO_LGT)-1)
-#         -------------------------------------
-#                   zoom^2 * 255.0
-#
-# const == (len(DRK_TO_LGT)-1)
-#          -------------------
-#            zoom^2 * 255.0
-#
-
-def ascii_mapper(ascii, zoom):
-    const = pow(zoom, -2) * (len(DRK_TO_LGT)-1) / 255.0
-
-    for row in xrange(len(ascii)):
-        for col in xrange(len(ascii[row])):
-            ascii[row][col] = DRK_TO_LGT[int(ascii[row][col] * const)]
-
+#                                                                TESTING
+# compare two characters
 def compare_chars():
 
     while True:
@@ -106,6 +55,7 @@ def compare_chars():
 
         print
 
+# compare two characters as squares
 def squares():
 
     while True:
@@ -123,12 +73,99 @@ def squares():
         if again.lower() == 'n':
             break
 
+# view the current spectrum
 def spectrum():
     for c in DRK_TO_LGT:
         print c*20
+#
+#                                                           END TESTING
+
+# take a url and return it as an Image
+def query_and_fetch():
+
+    choice = raw_input("Enter a valid image URI: ")
+    print
+
+    if choice.lower() == 'q':
+        return False
+
+    try:
+        data = urllib.urlopen(choice)
+        f = BytesIO(data.read())
+        img = Image.open(f)
+        return img
+
+    except:
+
+        try:
+            print "trying to open as path"
+            img = Image.open(choice)
+            return img
+
+        except:
+            print "something went wrong"
+            return False
+
+# convert img data into an easier to use format
+def get_pixels(img, width, height):
+    
+    data = list(img.getdata())
+    
+    return [data[i * width:(i + 1) * width] for i in xrange(height)]
+
+# home for the ascii image
+def make_ascii_frame(width, height, zoom):
+    
+    asc_width  = int(width/zoom)
+    asc_height = int(height/zoom)
+    
+    return [[0 for i in xrange(asc_width)] for j in xrange(asc_height)]
+
+# converts RGB into grayscale
+#   it so happens that the "gray" version of a color is not
+#   simple their average.
+#   green carries much more weight than red, which in turn carries more
+#   weight than blue, hence the factors.
+def grayscale(pixel):
+    return (pixel[0] * 0.299) + (pixel[1] * 0.587) + (pixel[2] * 0.114)
+
+# converts the image to grayscale and maps the values to the ascii array
+def gray_mapper(pixels, ascii, asc_width, asc_height, zoom):
+    
+    for row in xrange(len(pixels)):
+        for col in xrange(len(pixels[row])):
+            
+            if row/zoom < asc_height and col/zoom < asc_width:
+                
+                gray = grayscale(pixels[row][col])
+                ascii[int(row/zoom)][int(col/zoom)] += gray
+
+#
+# grayscale formula!
+#
+# gray == ascii[row][col] * (len(DRK_TO_LGT)-1)
+#         -------------------------------------
+#                   zoom^2 * 255.0
+#
+# const == (len(DRK_TO_LGT)-1)
+#          -------------------
+#            zoom^2 * 255.0
+#
+
+
+# maps the grayscale values in ascii[][] to characters
+def ascii_mapper(ascii, zoom):
+    const = pow(zoom, -2) * (len(DRK_TO_LGT)-1) / 255.0
+
+    for row in xrange(len(ascii)):
+        for col in xrange(len(ascii[row])):
+            
+            ascii[row][col] = DRK_TO_LGT[int(ascii[row][col] * const)]
+
+
 
 def write_image(chars):
-    name = str(clock())
+    name = str(clock()) + '.txt'
     f = open(name,'w')
     for line in chars:
         f.write(''.join(line))
