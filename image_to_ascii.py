@@ -82,8 +82,7 @@ def spectrum():
 
 # take a url and return it as an Image
 def query_and_fetch():
-
-    choice = raw_input("Enter a valid image URI: ")
+    choice = raw_input("Enter an image URI: ")
     print
 
     if choice.lower() == 'q':
@@ -178,7 +177,7 @@ def main():
 
     while active:
 
-        zoom = 3
+        zoom = 5
         img = query_and_fetch()
         t1 = clock()
         width, height = img.size
@@ -194,7 +193,7 @@ def main():
 
             bad = True
             while bad:
-                print clock()-t1
+                print  clock()-t1
                 opt = raw_input("""
 'zin'  - zoom in
 'zout' - zoom out
