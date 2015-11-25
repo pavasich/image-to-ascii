@@ -34,10 +34,14 @@ Some URIs:
 
 #### TODO
 
-* Obviously, the spectrum could be cleaner and less dependent on IDLE.
+* Obviously, the spectrum could be cleaner and less dependent on IDLE
 
-* Save file names.
+* Save file names
 
-* Export a pixel-ey grayscale image.
+* Export a pixel-ey grayscale image
+
+* Make more practical use of `clock()`
+
+* Consider a switch over `if`, `elif`, `elif`, and so on
 
 * &c.

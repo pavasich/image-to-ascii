@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+
+# image_to_ascii.py (Python 2.7)
+# v0.1
+# Updated last on 11-24-2015
+# paul.vasich(at)gmail
+# github:   pavasich
+#
+
 import Image
 import urllib2 as urllib
 from io import BytesIO
@@ -107,22 +115,22 @@ def query_and_fetch():
 
 # convert img data into an easier to use format
 def get_pixels(img, width, height):
-    
+
     data = list(img.getdata())
-    
+
     return [data[i * width:(i + 1) * width] for i in xrange(height)]
 
 # home for the ascii image
 def make_ascii_frame(width, height, zoom):
-    
+
     asc_width  = int(width/zoom)
     asc_height = int(height/zoom)
-    
+
     return [[0 for i in xrange(asc_width)] for j in xrange(asc_height)]
 
 # converts RGB into grayscale
 #   it so happens that the "gray" version of a color is not
-#   simple their average.
+#   a simple average.
 #   green carries much more weight than red, which in turn carries more
 #   weight than blue, hence the factors.
 def grayscale(pixel):
@@ -130,12 +138,12 @@ def grayscale(pixel):
 
 # converts the image to grayscale and maps the values to the ascii array
 def gray_mapper(pixels, ascii, asc_width, asc_height, zoom):
-    
+
     for row in xrange(len(pixels)):
         for col in xrange(len(pixels[row])):
-            
+
             if row/zoom < asc_height and col/zoom < asc_width:
-                
+
                 gray = grayscale(pixels[row][col])
                 ascii[int(row/zoom)][int(col/zoom)] += gray
 
@@ -158,7 +166,7 @@ def ascii_mapper(ascii, zoom):
 
     for row in xrange(len(ascii)):
         for col in xrange(len(ascii[row])):
-            
+
             ascii[row][col] = DRK_TO_LGT[int(ascii[row][col] * const)]
 
 
